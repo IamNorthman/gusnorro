@@ -1,0 +1,151 @@
+/*import 'dart:ffi';
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class MyCheckbox extends StatefulWidget {
+  @override
+  State<MyCheckbox> createState() => _MyCheckboxState();
+}
+
+class _MyCheckboxState extends State<MyCheckbox> {
+  bool _isChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Checkbox(
+      value: _isChecked,
+      onChanged: (value) {
+        setState(() {
+          _isChecked = value!;
+        });
+      },
+    );
+  }
+}
+
+class MyState extends ChangeNotifier {
+  Widget _toDoItems(String toDo) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        MyCheckbox(),
+        Expanded(child: Text(toDo, style: TextStyle(fontSize: 24))),
+        TextButton(onPressed: () {}, child: Icon(Icons.delete)),
+        Padding(padding: EdgeInsets.symmetric(vertical: 40))
+      ],
+    );
+  }
+}
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To do',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Color.fromARGB(255, 0, 96, 223),
+            brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(),
+    );
+  }
+}
+
+//Innehållet på To Do list sidan
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text('To do'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AddNote()));
+              },
+            )
+          ],
+        ),
+        body: ListView(
+          children: [
+            Padding(padding: EdgeInsets.all(10)),
+            _toDoItems('Gör en to do lista'),
+            _toDoItems('Lägg in saker i to do'),
+            _toDoItems('Lägg in saker i to do2'),
+/*            FloatingActionButton(
+                onPressed: () {},
+                child: Icon(Icons.add,
+                    color: Color.fromARGB(255, 58, 167, 255), size: 42.0))*/
+          ],
+        ));
+  }
+}
+
+bool isChecked2 = false;
+
+//Widget till att göra en ny To Do punkt
+Widget _toDoItems(String toDo) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      MyCheckbox(),
+      Expanded(child: Text(toDo, style: TextStyle(fontSize: 24))),
+      TextButton(onPressed: () {}, child: Icon(Icons.delete)),
+      Padding(padding: EdgeInsets.symmetric(vertical: 40))
+    ],
+  );
+}
+
+class AddNote extends StatefulWidget {
+  @override
+  State<AddNote> createState() => _AddNoteState();
+}
+
+class _AddNoteState extends State<AddNote> {
+  final _controller = TextEditingController();
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text('To do'),
+        ),
+        body: Column(
+          children: [
+            Text(
+              'Skriv in To Do',
+              style: TextStyle(fontSize: 24),
+            ),
+            TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide(width: 50)),
+                  hintText: 'Skriv in din to do'),
+            ),
+            ElevatedButton(
+              onPressed: () {_toDoItems()},
+              child: Text('Lägg till'),
+            )
+          ],
+        ));
+  }
+}
