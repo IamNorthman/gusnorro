@@ -149,3 +149,1099 @@ class _AddNoteState extends State<AddNote> {
         ));
   }
 }
+
+
+
+
+
+
+
+
+void main() {
+  ToDoClass state = ToDoClass();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ToDoClass(),
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To do',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Color.fromARGB(255, 0, 96, 223),
+            brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+//Build the ground of homepage
+class MyHomePage extends StatelessWidget {
+  MyHomePage({super.key});
+
+  List<ToDoClass> _toDoList = [];
+  
+  bool? get value => null;
+
+  void addItem(ToDoClass toDoClass) {
+    _toDoList.add(toDoClass);
+  }
+
+  List<ToDoClass> get basketItem {
+    return _toDoList;
+  }
+
+  void checkBoxChanged(bool? value, int index) {
+    _toDoList[index][1] = !_toDoList[index][1];
+  }
+
+  //Building the UI of to do's that is on the list
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text('To do'),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.read<ToDoClass>().newToDo();
+          },
+          child: Icon(Icons.add),
+        ),
+        body: ListView.builder(
+          itemCount: _toDoList.length,
+          itemBuilder: (context, index) {
+            return ToDoBlock(
+              toDoName: _toDoList[index][0],
+              toDoDone: _toDoList[index][1],
+              onChanged: checkBoxChanged(value, index),
+              deleteToDo: context.read<ToDoClass>().deleteToDo(),
+            );
+          },
+        ));
+  }
+}
+
+
+class ToDoClass extends ChangeNotifier {
+  final List _toDoList = [[], []];
+
+  List get toDoList => _toDoList;
+
+  //To be able to change the state of the checkbox
+  final _controller = TextEditingController();
+
+  //Building the dialog pop out when adding a new to do
+
+  void checkBoxChanged(bool? value, int index) {
+    _toDoList[index][1] = !_toDoList[index][1];
+  }
+
+  //Function to create a new to do post
+  void saveNewToDO() {
+    toDoList.add([_controller.text, false]);
+    _controller.clear();
+    var context;
+    Navigator.of(context as BuildContext).pop();
+  }
+
+  //Function to delete selected to do post via the slider
+  void deleteToDo(int index) {
+    toDoList.removeAt(index);
+  }
+}
+
+class ToDoBlock extends StatelessWidget {
+  final String toDoName;
+  final bool toDoDone;
+  Function(bool?)? onChanged;
+
+  Function(BuildContext)? deleteToDo;
+
+  ToDoBlock(
+      {super.key,
+      required this.toDoName,
+      required this.toDoDone,
+      required this.onChanged,
+      required this.deleteToDo});
+
+  //Build each container that holds every to do
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: (EdgeInsets.only(left: 10, right: 10, top: 20)),
+        child: Slidable(
+            endActionPane: ActionPane(motion: StretchMotion(), children: [
+              SlidableAction(
+                onPressed: deleteToDo,
+                icon: Icons.delete,
+                borderRadius: BorderRadius.circular(30),
+              )
+            ]),
+            child: Container(
+              padding: EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 53, 53, 53),
+                  borderRadius: BorderRadius.circular(30)),
+              child: Row(
+                children: [
+                  Checkbox(value: toDoDone, onChanged: onChanged),
+                  Text(
+                    toDoName,
+                    style: TextStyle(
+                        fontSize: 24,
+                        decoration: toDoDone
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+void main() {
+  ToDoClass state = ToDoClass();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ToDoClass(),
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To do',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Color.fromARGB(255, 0, 96, 223),
+            brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+//Build the ground of homepage
+class MyHomePage extends StatelessWidget {
+  MyHomePage({super.key});
+
+  List<ToDoClass> _toDoList = [];
+
+  bool? get value => null;
+
+  get toDoList => null;
+
+  get _controller => null;
+
+  void addItem(ToDoClass toDoClass) {
+    _toDoList.add(toDoClass);
+  }
+
+  List<ToDoClass> get basketItem {
+    return _toDoList;
+  }
+
+  void newToDo() {
+    var context;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              height: 200,
+              width: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(40)),
+                        fillColor: Colors.blueGrey,
+                        hintText: 'Add your to do'),
+                  ),
+                  MaterialButton(
+                      onPressed: context.read<ToDoClass>().saveNewToDO,
+                      color: Color.fromARGB(255, 0, 65, 150),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                      padding: EdgeInsets.only(
+                          left: 80, right: 80, top: 10, bottom: 10),
+                      child: Text('Add')),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  //Building the UI of to do's that is on the list
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text('To do'),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            newToDo();
+          },
+          child: Icon(Icons.add),
+        ),
+        body: ListView.builder(
+          itemCount: _toDoList.length,
+          itemBuilder: (context, index) {
+            return ToDoBlock(
+              toDoName: toDoList[index][0],
+              toDoDone: toDoList[index][1],
+              onChanged: (p0) =>
+                  context.read<ToDoClass>().checkBoxChanged(value, index),
+              deleteToDo: (p0) => context.read<ToDoClass>().deleteToDo(index),
+            );
+          },
+        ));
+  }
+}
+
+
+
+
+
+
+class ToDoClass extends ChangeNotifier {
+  final List _toDoList = [[], []];
+
+  List get toDoList => _toDoList;
+
+  //To be able to change the state of the checkbox
+  final _controller = TextEditingController();
+
+  //Building the dialog pop out when adding a new to do
+
+  void checkBoxChanged(bool? value, int index) {
+    _toDoList[index][1] = !_toDoList[index][1];
+  }
+
+  //Function to create a new to do post
+  void saveNewToDO() {
+    toDoList.add([_controller.text, false]);
+    _controller.clear();
+    var context;
+    Navigator.of(context as BuildContext).pop();
+  }
+
+  //Function to delete selected to do post via the slider
+  void deleteToDo(int index) {
+    toDoList.removeAt(index);
+  }
+}
+
+class ToDoBlock extends StatelessWidget {
+  final String toDoName;
+  final bool toDoDone;
+  Function(bool?)? onChanged;
+
+  Function(BuildContext)? deleteToDo; 
+
+  ToDoBlock(
+      {super.key,
+      required this.toDoName,
+      required this.toDoDone,
+      required this.onChanged,
+      required this.deleteToDo});
+
+  //Build each container that holds every to do
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: (EdgeInsets.only(left: 10, right: 10, top: 20)),
+        child: Slidable(
+            endActionPane: ActionPane(motion: StretchMotion(), children: [
+              SlidableAction(
+                onPressed: deleteToDo,
+                icon: Icons.delete,
+                borderRadius: BorderRadius.circular(30),
+              )
+            ]),
+            child: Container(
+              padding: EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 53, 53, 53),
+                  borderRadius: BorderRadius.circular(30)),
+              child: Row(
+                children: [
+                  Checkbox(value: toDoDone, onChanged: onChanged),
+                  Text(
+                    toDoName,
+                    style: TextStyle(
+                        fontSize: 24,
+                        decoration: toDoDone
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+void main() {
+  ToDoClass state = ToDoClass();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ToDoClass(),
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To do',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Color.fromARGB(255, 0, 96, 223),
+            brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+//Build the ground of homepage
+class MyHomePage extends StatelessWidget {
+  MyHomePage({super.key});
+
+  List<ToDoClass> toDoList = [];
+  
+
+  void addItem(ToDoClass toDoClass) {
+    toDoList.add(toDoClass);
+  }
+
+  List<ToDoClass> get basketItem {
+    return toDoList;
+  }
+
+  void newToDo() {
+    var context;
+    showDialog(
+        context: context,
+        builder: (context) {
+          var controller;
+          return AlertDialog(
+            content: Container(
+              height: 200,
+              width: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(40)),
+                        fillColor: Colors.blueGrey,
+                        hintText: 'Add your to do'),
+                  ),
+                  MaterialButton(
+                      onPressed: context.read<ToDoClass>().saveNewToDO,
+                      color: Color.fromARGB(255, 0, 65, 150),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                      padding: EdgeInsets.only(
+                          left: 80, right: 80, top: 10, bottom: 10),
+                      child: Text('Add')),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  //Building the UI of to do's that is on the list
+  @override
+  Widget build(BuildContext context) => ChangeNotifierProvider( 
+    create: (context) => ToDoClass(),
+    child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text('To do'),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            newToDo();
+          },
+          child: Icon(Icons.add),
+        ),
+        body: ListView.builder(
+          itemCount: toDoList.length,
+          itemBuilder: (context, index) {
+            return ToDoBlock(
+              toDoName: toDoList[index][0],
+              toDoDone: toDoList[index][1],
+              onChanged: (p0) =>
+                  context.read<ToDoClass>().checkBoxChanged(false, index),
+              deleteToDo: (p0) => context.read<ToDoClass>().deleteToDo(index),
+            );
+          },
+        )));
+  }
+
+*/
+
+
+
+/*
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) {
+              TextEditingController controller = TextEditingController();
+              return AlertDialog(
+            content: Container(
+              height: 200,
+              width: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(40)),
+                        fillColor: Colors.blueGrey,
+                        hintText: 'Add your to do'),
+                  ),
+                  MaterialButton(
+                      onPressed: context.read<TodoClass>().addTodo,
+                      color: Color.fromARGB(255, 0, 65, 150),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                      padding: EdgeInsets.only(
+                          left: 80, right: 80, top: 10, bottom: 10),
+                      child: Text('Add')),
+                ],
+              ),
+            ),
+          );
+        ;},
+      ),
+    ))
+  );}
+}
+
+
+
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: 'My App',
+      home: ChangeNotifierProvider(
+        create: (context) => TodoClass(),
+        child: TodoApp(),
+      ),
+    ),
+  );
+}
+
+return AlertDialog(
+                title: Text('Add Todo'),
+                content: TextField(
+                  controller: controller,
+                  decoration: InputDecoration(hintText: 'Enter todo text'),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Provider.of<TodoClass>(context, listen: false)
+                          .addTodo(controller.text);
+                      Navigator.pop(context);
+                    },
+                    child: Text('Add'),
+                  ),
+                ],
+              );
+            },
+          ),
+          child: Icon(Icons.add),
+          
+          
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: 'My App',
+      home: ChangeNotifierProvider(
+        create: (context) => TodoClass(),
+        child: TodoApp(),
+      ),
+    ),
+  );
+}
+
+class TodoApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(title: Text('Todo List')),
+            body: Consumer<TodoClass>(
+              builder: (context, model, child) {
+                return ListView.builder(
+                  itemCount: model.todos.length,
+                  itemBuilder: (context, index) {
+                    final todo = model.todos[index];
+                    return ListTile(
+                      title: Text(todo.text),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.check),
+                            onPressed: () => model.toggleTodo(index),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => model.removeTodo(index),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) {
+                  TextEditingController controller = TextEditingController();
+                  return AlertDialog(
+                    content: Container(
+                      height: 200,
+                      width: 300,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextField(
+                            controller: controller,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(40)),
+                                fillColor: Colors.blueGrey,
+                                hintText: 'Add your to do'),
+                          ),
+                          MaterialButton(
+                              onPressed: () {
+                                context
+                                    .read<TodoClass>()
+                                    .addTodo(controller.text);
+                              },
+                              color: Color.fromARGB(255, 0, 65, 150),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                              padding: EdgeInsets.only(
+                                  left: 80, right: 80, top: 10, bottom: 10),
+                              child: Text('Add')),
+                        ],
+                      ),
+                    ),
+                  );
+                  ;
+                },
+              ),
+            )));
+  }
+}
+
+class TodoClass extends ChangeNotifier {
+  List<Todo> _todos = [];
+
+  List<Todo> get todos => _todos;
+
+  void addTodo(String text) {
+    _todos.add(Todo(text: text));
+    notifyListeners();
+  }
+
+  void removeTodo(int index) {
+    _todos.removeAt(index);
+    notifyListeners();
+  }
+
+  void toggleTodo(int index) {
+    _todos[index].completed = !_todos[index].completed;
+    notifyListeners();
+  }
+}
+
+class Todo {
+  final String text;
+  bool completed;
+
+  Todo({required this.text, this.completed = false});
+}
+*/
+
+
+/*
+class TodoApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(title: Text('Todo List')),
+            body: Consumer<TodoClass>(
+              builder: (context, model, child) {
+                return ListView.builder(
+                  itemCount: model.todos.length,
+                  itemBuilder: (context, index) {
+                    final todo = model.todos[index];
+                    return ListTile(
+                      title: Text(todo.text),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.check),
+                            onPressed: () => model.toggleTodo(index),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => model.removeTodo(index),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) {
+                  TextEditingController controller = TextEditingController();
+                  return AlertDialog(
+                    content: Container(
+                      height: 200,
+                      width: 300,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextField(
+                            controller: controller,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(40)),
+                                fillColor: Colors.blueGrey,
+                                hintText: 'Add your to do'),
+                          ),
+                          MaterialButton(
+                              onPressed: () {
+                                context
+                                    .read<TodoClass>()
+                                    .addTodo(controller.text);
+                              },
+                              color: Color.fromARGB(255, 0, 65, 150),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                              padding: EdgeInsets.only(
+                                  left: 80, right: 80, top: 10, bottom: 10),
+                              child: Text('Add')),
+                        ],
+                      ),
+                    ),
+                  );
+                  ;
+                },
+              ),
+            )));
+  }
+} */
+
+
+
+/*class TodoClass extends ChangeNotifier {
+  List<Todo> _todos = [];
+
+  List<Todo> get todos => _todos;
+
+  void getTodo() async {
+    var todos = await api.getTodo();
+    _todos = todos.cast<Todo>();
+    notifyListeners();
+  }
+
+  void addTodo(Todo todo) async {
+    _todos.add(todo);
+    notifyListeners();
+  }
+
+  void removeTodo(int index) {
+    _todos.removeAt(index);
+    notifyListeners();
+  }
+
+  void toggleTodo(int index) {
+    _todos[index].completed = !_todos[index].completed;
+    notifyListeners();
+  }
+}
+
+void main() {
+  TodoClass state = TodoClass();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => state,
+      child: MyApp(),
+    ),
+  );
+}
+
+// This widget is the root of your application.
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To do',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Color.fromARGB(255, 0, 96, 223),
+            brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+//Building the UI of to do's that is on the list
+class MyHomePage extends StatelessWidget {
+  bool value = false;
+  final TextEditingController controllerTodo = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    var todo = context.watch<TodoClass>()._todos;
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text('To do'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  height: 200,
+                  width: 300,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextField(
+                        controller: controllerTodo,
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40)),
+                            fillColor: Colors.blueGrey,
+                            hintText: 'Add your to do'),
+                      ),
+                      MaterialButton(
+                          onPressed: () async {
+                            var todoInput = controllerTodo.text;
+                            Todo todo = Todo(todoInput);
+                            context.read<TodoClass>().addTodo(todo);
+                            Navigator.pop(context);
+                          },
+                          color: Color.fromARGB(255, 0, 65, 150),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          padding: EdgeInsets.only(
+                              left: 80, right: 80, top: 10, bottom: 10),
+                          child: Text('Add')),
+                    ],
+                  ),
+                ),
+              );
+            }),
+      ),
+      body: Consumer<TodoClass>(
+        builder: (context, model, child) {
+          return ListView.builder(
+            itemCount: model.todos.length,
+            itemBuilder: (context, index) {
+              final todo = model.todos[index];
+              return ListTile(
+                visualDensity: VisualDensity(vertical: 4),
+                leading: Checkbox(
+                  value: todo.completed,
+                  onChanged: (value) {},
+                ),
+                title: Text(todo as String,
+                    style: TextStyle(
+                        fontSize: 18,
+                        decoration: todo.completed
+                            ? TextDecoration.lineThrough
+                            : null)),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () => model.removeTodo(index),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+
+const String ENDPOINT = 'https://todoapp-api.apps.k8s.gu.se';
+
+Future<List<Todo>> getTodo() async {
+  http.Response response = await http
+      .get(Uri.parse('$ENDPOINT/b8dd8852-87e6-48ee-b08e-f7733f28df09'));
+  String body = response.body;
+  Map<String, dynamic> jsonResponse = jsonDecode(body);
+  List todoJson = jsonResponse['todos'];
+  return todoJson.map((json) => Todo.fromJson(json)).toList();
+}
+
+Future<void> addTodo(Todo todo) async {
+  await http.post(
+    Uri.parse('$ENDPOINT/todos?key=b8dd8852-87e6-48ee-b08e-f7733f28df09'),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode(todo.toJson()),
+  );
+}
+
+
+
+
+class Todo {
+  final Int id;
+  final String todo;
+  bool completed;
+
+  Todo(this.id, this.todo, this.completed);
+
+  factory Todo.fromJson(Map<String, dynamic> json) {
+    return Todo(json["id"], json["title"], json["done"]);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': todo,
+      'done': completed,
+    };
+  }
+}
+*/
+
+
+/*import 'dart:ffi';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import './api.dart' as api;
+import './models.dart';
+
+class TodoClass extends ChangeNotifier {
+  List<Todo> _todos = [];
+
+  List<Todo> get todos => _todos;
+
+  Future<void> fetchTodo() async {
+    var todos = await api.getTodo();
+    _todos = todos;
+    notifyListeners();
+  }
+
+  Future<void> addTodo(Todo todo) async {
+    await api.addTodo(todo);
+    await fetchTodo();
+  }
+
+  void removeTodo(int index) {
+    _todos.removeAt(index);
+    notifyListeners();
+  }
+
+  void toggleTodo(int index) {
+    _todos[index].done = !_todos[index].done;
+    notifyListeners();
+  }
+}
+
+void main() {
+  TodoClass state = TodoClass();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => state,
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To do',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color.fromARGB(255, 0, 96, 223),
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  final TextEditingController controllerTodo = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    var todos = context.watch<TodoClass>().todos;
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text('To do'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Container(
+                height: 200,
+                width: 300,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextField(
+                      controller: controllerTodo,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        fillColor: Colors.blueGrey,
+                        hintText: 'Add your to do',
+                      ),
+                    ),
+                    MaterialButton(
+                      onPressed: () async {
+                        var todoInput = controllerTodo.text;
+                        Todo todo = Todo(todoInput, false);
+                        await context.read<TodoClass>().addTodo(todo);
+                        Navigator.pop(context);
+                      },
+                      color: Color.fromARGB(255, 0, 65, 150),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: EdgeInsets.only(
+                        left: 80,
+                        right: 80,
+                        top: 10,
+                        bottom: 10,
+                      ),
+                      child: Text('Add'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      body: Consumer<TodoClass>(
+        builder: (context, model, child) {
+          return ListView.builder(
+            itemCount: model.todos.length,
+            itemBuilder: (context, index) {
+              final todo = model.todos[index];
+              return ListTile(
+                visualDensity: VisualDensity(vertical: 4),
+                leading: Checkbox(
+                  value: todo.done,
+                  onChanged: (value) {
+                    model.toggleTodo(index);
+                  },
+                ),
+                title: Text(
+                  todo.title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    decoration: todo.done ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () => model.removeTodo(index),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+*/
