@@ -1245,3 +1245,541 @@ class MyHomePage extends StatelessWidget {
   }
 }
 */
+
+
+
+/*//API endpoint
+const String API_ENDPOINT = 'https://todoapp-api.apps.k8s.gu.se';
+
+//Start the app
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TodoProvider(),
+      child: MaterialApp(
+        title: 'To-Do App',
+        home: MyHomePage(),
+      ),
+    ),
+  );
+}
+
+//Build main page
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('To-Do App'),
+      ),
+      body: TodoList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AddTodoDialog();
+            },
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+//Build the to dos
+class TodoList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<TodoProvider>(
+      builder: (context, todoProvider, child) {
+        return ListView.builder(
+          itemCount: todoProvider.todos.length,
+          itemBuilder: (context, index) {
+            final todo = todoProvider.todos[index];
+            return ListTile(
+              leading: Checkbox(
+                value: todo.done,
+                onChanged: (value) {
+                  todoProvider.toggleTodoStatus(index);
+                },
+              ),
+              title: Text(todo.title),
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () {
+                  todoProvider.removeTodo(index);
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+//Dialog window to add to do
+class AddTodoDialog extends StatelessWidget {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Add a To-Do'),
+      content: TextField(
+        controller: _controller,
+        decoration: InputDecoration(
+          hintText: 'Enter your to-do',
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final newTodoTitle = _controller.text;
+            if (newTodoTitle.isNotEmpty) {
+              context.read<TodoProvider>().addTodo(Todo(title: newTodoTitle));
+              Navigator.of(context).pop();
+            }
+          },
+          child: Text('Add'),
+        ),
+      ],
+    );
+  }
+}
+
+//Creating providers to access
+class Todo {
+  final String id;
+  final String title;
+  bool done;
+
+  Todo(
+      {required this.title,
+      this.done = false,
+      this.id = 'dc0c1faf-887c-4816-b6f8-e699b12e8c8f'});
+
+  factory Todo.fromJson(Map<String, dynamic> json) {
+    return Todo(
+      id: json['id'] ?? 'dc0c1faf-887c-4816-b6f8-e699b12e8c8fe',
+      title: json['title'],
+      done: json['done'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'done': done,
+    };
+  }
+}
+
+class TodoProvider with ChangeNotifier {
+  List<Todo> _todos = [];
+
+  List<Todo> get todos => _todos;
+
+  TodoProvider() {
+    fetchTodos();
+  }
+
+  Future<List<Todo>> fetchTodos() async {
+    http.Response response = await http.get(Uri.parse(
+        '$API_ENDPOINT/todos?key=dc0c1faf-887c-4816-b6f8-e699b12e8c8f'));
+    String body = response.body;
+
+    Map<String, dynamic> jsonResponse = jsonDecode(body);
+    List todosJson = jsonResponse['todos'];
+    return todosJson.map((json) => Todo.fromJson(json)).toList();
+  }
+
+  Future<void> addTodo(Todo todo) async {
+    final response = await http.post(
+      Uri.parse('$API_ENDPOINT/todos'),
+      headers: {"Content-Type": "application/json", 'Charset': 'utf-8'},
+      body: json.encode(todo.toJson()),
+    );
+    fetchTodos();
+  }
+
+  Future<void> removeTodo(int index) async {
+    final todo = _todos[index];
+    final response = await http.delete(
+      Uri.parse('$API_ENDPOINT'),
+    );
+    fetchTodos();
+  }
+
+  void toggleTodoStatus(int index) {
+    _todos[index].done = !_todos[index].done;
+    notifyListeners();
+  }
+}
+*/
+
+
+/*/*import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+
+class ToDoBlock extends StatelessWidget {
+  final String toDoName;
+  final bool toDoDone;
+  Function(bool?)? onChanged;
+
+  Function(BuildContext)? deleteToDo;
+
+  ToDoBlock(
+      {super.key,
+      required this.toDoName,
+      required this.toDoDone,
+      required this.onChanged,
+      required this.deleteToDo});
+
+  //Build each container that holds every to do
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: (EdgeInsets.only(left: 10, right: 10, top: 20)),
+        child: Slidable(
+            endActionPane: ActionPane(motion: StretchMotion(), children: [
+              SlidableAction(
+                onPressed: deleteToDo,
+                icon: Icons.delete,
+                borderRadius: BorderRadius.circular(30),
+              )
+            ]),
+            child: Container(
+              padding: EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 53, 53, 53),
+                  borderRadius: BorderRadius.circular(30)),
+              child: Row(
+                children: [
+                  Checkbox(value: toDoDone, onChanged: onChanged),
+                  Text(
+                    toDoName,
+                    style: TextStyle(
+                        fontSize: 24,
+                        decoration: toDoDone
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+*/
+
+/*class MyState extends ChangeNotifier {
+  List<Todo> _todos = [];
+
+  List<Todo> get todos => _todos;
+
+  void fetchTodos() async {
+    var todos = await api.getTodo();
+    _todos = todos;
+    notifyListeners();
+  }
+
+  void addTodo(Todo todo) async {
+    await api.addTodo(todo);
+    fetchTodos();
+  }
+}
+
+void main() {
+  MyState state = MyState();
+
+  state.fetchTodos();
+
+  runApp(ChangeNotifierProvider(
+    create: (context) => state,
+    child: MyApp(),
+  ));
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: MyHome());
+  }
+}
+
+class MyHome extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var todos = context.watch<MyState>().todos;
+    return Scaffold(
+      appBar: AppBar(),
+      body: ListView(
+        children: todos.map((todos) => TodoWidget(todos)).toList(),
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddTodo(),
+              ),
+            );
+          },
+          child: Icon(Icons.add)),
+    );
+  }
+}
+
+class TodoWidget extends StatelessWidget {
+  final Todo todo;
+
+  TodoWidget(this.todo);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(title: Text(todo.title));
+  }
+}
+
+class AddTodo extends StatelessWidget {
+  final TextEditingController todoController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Add new to do'),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Your todo'),
+            TextField(
+              controller: todoController,
+            ),
+            FilledButton(
+                onPressed: () {
+                  var todoTitle = todoController.text;
+                  context.read<MyState>().addTodo(todoTitle as Todo);
+                },
+                child: Text('Add'))
+          ],
+        ));
+  }
+}
+
+
+//API endpoint
+const String API_ENDPOINT = 'https://todoapp-api.apps.k8s.gu.se';
+
+//Start the app
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TodoProvider(),
+      child: MaterialApp(
+        title: 'To-Do App',
+        home: MyHomePage(),
+      ),
+    ),
+  );
+}
+
+//Build main page
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('To-Do App'),
+      ),
+      body: TodoList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AddTodoDialog();
+            },
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+//Build the to dos
+class TodoList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<TodoProvider>(
+      builder: (context, todoProvider, child) {
+        return ListView.builder(
+          itemCount: todoProvider.todos.length,
+          itemBuilder: (context, index) {
+            final todo = todoProvider.todos[index];
+            return ListTile(
+              leading: Checkbox(
+                value: todo.done,
+                onChanged: (value) {
+                  todoProvider.toggleTodoStatus(index);
+                },
+              ),
+              title: Text(todo.title),
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () {
+                  todoProvider.removeTodo(index);
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+//Dialog window to add to do
+class AddTodoDialog extends StatelessWidget {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Add a To-Do'),
+      content: TextField(
+        controller: _controller,
+        decoration: InputDecoration(
+          hintText: 'Enter your to-do',
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final newTodoTitle = _controller.text;
+            if (newTodoTitle.isNotEmpty) {
+              context.read<TodoProvider>().addTodo(Todo(title: newTodoTitle));
+              Navigator.of(context).pop();
+            }
+          },
+          child: Text('Add'),
+        ),
+      ],
+    );
+  }
+}*/
+
+/*class MyState extends ChangeNotifier {
+  List<Todo> _todos = [];
+
+  List<Todo> get todos => _todos;
+
+  void fetchTodos() async {
+    var todos = await api.getTodo();
+    _todos = todos;
+    notifyListeners();
+  }
+
+  void addTodo(Todo todo) async {
+    await api.addTodo(todo);
+    fetchTodos();
+  }
+}
+
+void main() {
+  MyState state = MyState();
+
+  state.fetchTodos();
+
+  runApp(ChangeNotifierProvider(
+    create: (context) => state,
+    child: MyApp(),
+  ));
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: MyHome());
+  }
+}
+
+class MyHome extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var todos = context.watch<MyState>().todos;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('To do'),
+      ),
+      body: ListView(
+        children: todos.map((todos) => TodoWidget(todos)).toList(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddTodoView(),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class TodoWidget extends StatelessWidget {
+  final Todo todo;
+
+  TodoWidget(this.todo);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(title: Text(todo.title));
+  }
+}
+
+class AddTodoView extends StatelessWidget {
+  final TextEditingController todoController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Add new to do'),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Your todo'),
+            TextField(
+              controller: todoController,
+            ),
+            FilledButton(
+                onPressed: () {
+                  var todoTitle = todoController.text;
+                  context.read<MyState>().addTodo(todoTitle as Todo);
+                },
+                child: Text('Add'))
+          ],
+        ));
+  }
+}
+*/
