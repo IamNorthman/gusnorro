@@ -4,7 +4,7 @@ import 'dart:convert';
 
 //variable for the API url
 final Uri $ENDPOINT = Uri.parse(
-    'https://todoapp-api.apps.k8s.gu.se/todos?key=337ea463-c7eb-4899-a047-160e113d2fbb');
+    'https://todoapp-api.apps.k8s.gu.se/todos?key=08e76db9-65eb-4cf0-ab44-b6d27af09552');
 
 void main() => runApp(MyApp());
 
@@ -79,7 +79,7 @@ class _TodoListState extends State<TodoList> {
   //Function to delete todo
   Future<void> deleteTodo(String id) async {
     final String endpoint =
-        'https://todoapp-api.apps.k8s.gu.se/todos/$id?key=337ea463-c7eb-4899-a047-160e113d2fbb';
+        'https://todoapp-api.apps.k8s.gu.se/todos/$id?key=08e76db9-65eb-4cf0-ab44-b6d27af09552';
 
     final response = await http.delete(
       Uri.parse(endpoint),
@@ -94,7 +94,7 @@ class _TodoListState extends State<TodoList> {
   //Function to update the status on the to do so when checkbox is checked it updates "done" in the API as well
   Future<void> updateTodoStatus(String id, String title, bool done) async {
     final String endpoint =
-        'https://todoapp-api.apps.k8s.gu.se/todos/$id?key=337ea463-c7eb-4899-a047-160e113d2fbb';
+        'https://todoapp-api.apps.k8s.gu.se/todos/$id?key=08e76db9-65eb-4cf0-ab44-b6d27af09552';
 
     await http.put(
       Uri.parse(endpoint),
@@ -127,6 +127,12 @@ class _TodoListState extends State<TodoList> {
     return Scaffold(
       appBar: AppBar(
         title: Text('To do'),
+        actions: [
+          IconButton(
+            onPressed: fetchData,
+            icon: Icon(Icons.update),
+          )
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -188,32 +194,59 @@ class _TodoListState extends State<TodoList> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('New Todo'),
-                content: TextField(
-                  controller: todoController,
-                  decoration:
-                      InputDecoration(hintText: 'Enter what you need to do'),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('Add'),
-                    onPressed: () {
-                      var todoTitle = todoController.text;
-                      addTodo(todoTitle);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddTodoScreen()),
           );
+          if (result != null) {
+            await addTodo(result);
+            fetchData();
+          }
         },
         child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class AddTodoScreen extends StatelessWidget {
+  final TextEditingController todoController = TextEditingController();
+
+  Future<void> addTodo(String title) async {
+    final response = await http.post(
+      $ENDPOINT,
+      body: json.encode({"title": title, "done": false}),
+      headers: {"Content-Type": "application/json"},
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('New Todo'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextField(
+              controller: todoController,
+              decoration:
+                  InputDecoration(labelText: 'Enter what you need to do'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                var todoTitle = todoController.text;
+                Navigator.of(context).pop(todoTitle);
+              },
+              child: Text('Add Todo'),
+            ),
+          ],
+        ),
       ),
     );
   }
